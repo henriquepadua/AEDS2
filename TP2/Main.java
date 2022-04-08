@@ -306,16 +306,3 @@ class Main{
      }    
    }
 }   
-
-
-  
-
-/*
-  while(!line.contains("span class\"release\"")){
-         line = buffer.readLine();
-      }
- 
-      line = buffer.readLine();
-      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-      this.setDatalancamento(sdf.parse(buscarAteParenteses(buffer.readLine()).trim())); 
-  */  
