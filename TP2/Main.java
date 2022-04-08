@@ -131,6 +131,27 @@ class Filme{
      return limpa;
    }
 
+   public static int pegarDuracao(String limpa){
+     String line = "";
+     line = limpa.trim();
+     int duracao = 0;
+     
+     if(line.contains("h")){
+       duracao += Integer.parseInt(line.charAt(0)+"")*60;
+       if(line.contains("m")){
+         line.trim();
+         String minutos = line.substring(3, line.indexOf("m"));
+         duracao += Integer.parseInt(minutos);
+       }
+     }
+
+     else if(line.contains("m")){
+       String minutos = line.substring(0, (line.indexOf("m")));
+       duracao += Integer.parseInt(minutos);
+     }
+     return duracao;
+   }
+
    public static String buscarAteParenteses(String filename){
      String line = "";
 
@@ -139,6 +160,22 @@ class Filme{
     }    
      return line;
    }
+
+   private String removeLetters(String value){
+      // Data declaration
+      String result = "";
+
+      for(int i = 0; i < value.length(); i++){
+          // If char is a number, a blank space, or a '.' (Used on convertBudget), will be stored into "result"
+          if( (value.charAt(i) >= 48 && value.charAt(i) <= 57) || value.charAt(i) == ' ' || value.charAt(i) == '.')
+              result += value.charAt(i);
+      }
+      return result;
+   } 
+
+   private Float convertBudget(String value){
+        return Float.parseFloat(removeLetters(value));
+     }
 
 
 
@@ -149,7 +186,7 @@ class Filme{
      //String teste2 = "/Users/1325905/Documents/TP2/" + filename;
 
      try{
-      FileReader reader = new FileReader(verde);
+      FileReader reader = new FileReader(teste);
       BufferedReader buffer = new BufferedReader(reader);
       
           line  = buffer.readLine();
@@ -173,16 +210,16 @@ class Filme{
           line = buffer.readLine();
           line = buffer.readLine();
           this.setGenero(removeTags(line).trim());
-/*
+
           line = buffer.readLine();
           while(!line.contains("span class=\"runtime\"")){
             line = buffer.readLine();
           }
           line = buffer.readLine();
           line = buffer.readLine();
-          this.setDuracao(Integer.parseInt((line).trim()));
+          this.setDuracao(pegarDuracao((line)));
 
-*/
+
           line = buffer.readLine();
           while(!line.contains("p class=\"wrap\"") && (!line.contains("<strong><bdi>"))){
             line = buffer.readLine();
@@ -194,8 +231,6 @@ class Filme{
             this.Titulo = this.Nome;
           }
 
-
-          
           while(!line.contains("<strong><bdi>")){
             line = buffer.readLine();
           }
@@ -206,6 +241,11 @@ class Filme{
             line = buffer.readLine();
           }
           this.setIdioma(removeTags(pegarIdioma(line)).trim());
+
+          line = buffer.readLine();
+          while(!line.contains("Orçamento</bdi>"));
+            String aux = removeTags(line.replace("Orçamento", " ")).trim();
+            this.setOrcamento((aux.equals("-")) ? 0.0F : convertBudget(aux));
          
           String[] entrada = new String[20];
           int cont = 0;
@@ -224,7 +264,7 @@ class Filme{
      }catch(FileNotFoundException e){
       System.out.println("Nao encontrei no arquivo");
      }catch(ParseException e){
-      System.out.println("Erro no parse do arquivo");
+      e.getLocalizedMessage();
      }catch(IOException e){
       System.out.println("Nao consigo ler o arquivo");
      }
@@ -240,6 +280,7 @@ class Filme{
 //classe Principal
 class Main{
   public static void main(String[] args){
+     MyIO.setCharset("UTF-8");
      String[] leitura = new String[1000];
      int Nentrada = 0;
 
@@ -262,7 +303,7 @@ class Main{
 
      for(int i = 0;i < Nentrada;i++){
        MyIO.println(filmes[i].imprimir());
-     }
+     }    
    }
 }   
 
