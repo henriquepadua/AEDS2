@@ -306,22 +306,25 @@ class Lista{
 }
 
 //classe Principal
-class QT3{
+class QT4{
 
-  public static boolean Pesquisar(Filme[] vet,int n, String x){
-    boolean resp = false;
-
-   for(int i = 0; i < n; i++){
-    /*System.out.println("->" + vet[i].getNome() + "<-");
-    System.out.println(x);*/
-     if(vet[i].getNome().equals(x)){
-         resp = true;
-         i = n;
+    public static boolean Pesquisar(Filme[] vet,int dir ,String x){
+        boolean resp = false;
+        int esq = 0, meio;
+        dir -=1; 
+        while (esq <= dir){
+           meio = (esq + dir) / 2;
+           if(x.equals(vet[meio].getNome())){
+              resp = true;
+              esq = dir + 1;
+           } else if (x.compareTo(vet[meio].getNome())>0 ) {
+              esq = meio + 1;
+           } else {
+              dir = meio - 1;
+           }
+        }
+        return resp;
      }
-   }
-   
-     return resp;
-  }
    public static void main(String[] args)throws Exception{
      MyIO.setCharset("UTF-8");
 
