@@ -54,7 +54,11 @@ class Filme{
    //Metodos gets
    public String getNome(){return this.Nome;};
    public String getTitulo(){return this.Titulo;};
-   public Date getDatadelancamento(){return this.Datadelancamento;};
+   public Date getDatadelancamento(){
+    if(this.Datadelancamento == null)
+       return new Date();     
+      return this.Datadelancamento;
+    }
    public int getDuracao(){return this.Duracao;};
    public String getGenero(){return this.Genero;};
    public String getIdioma(){return this.Idioma;};
@@ -63,7 +67,7 @@ class Filme{
    public String[] getPalavrachave(){return this.Palavrachave;};   
    public String getPalavrachaveString(){
      String palavraschave = "";
-     
+     //MyIO.print("[");
      for(String s:this.Palavrachave){
        palavraschave +=  s + ",";
        if(s == null){
@@ -73,6 +77,7 @@ class Filme{
        
      }
      palavraschave = palavraschave.replaceAll(",null,", "");
+    // MyIO.print("]");
      
      return palavraschave;
    }
@@ -181,7 +186,7 @@ class Filme{
    public void lerHtml(String filename) throws ParseException{   
      String line = "";
      String verde = "/tmp/filmes/" + filename;
-     String teste = "/Users/User/Documents/TP2/" + filename;
+     String teste = filename;
      //String teste2 = "/Users/1325905/Documents/TP2/" + filename;
 
      try{
@@ -261,7 +266,7 @@ class Filme{
 
        buffer.close();
      }catch(FileNotFoundException e){
-      System.out.println("Nao encontrei no arquivo");
+      e.printStackTrace();
      }catch(ParseException e){
       e.getLocalizedMessage();
      }catch(IOException e){
@@ -276,58 +281,62 @@ class Filme{
 }//fechando a classe Filmes
 
 class Lista{
-   private Filme[] array;
-   private int n;
+  private Filme[] array;
+  private int n;
 
-   public Lista () {
-      this(1000);
-   }
-   
-   public Lista (int tamanho){
-      array = new Filme[tamanho];
-      n = 0;
-   }
-
-   public void inserir(Filme x, int pos) throws Exception {
-
-      //validar insercao
-      if(n >= array.length || pos < 0 || pos > n){
-         throw new Exception("Erro ao inserir!");
-      }
-
-      //levar elementos para o fim do array
-      for(int i = n; i > pos; i--){
-         array[i] = array[i-1];
-      }
-
-      array[pos] = x;
-      n++;
-   }
-
-   public void sort() {
-      for (int i = 0; i < (n - 1); i++) {
-         int menor = i;
-         for (int j = (i + 1); j < n; j++){
-            if ((array[menor].getTitulo().compareTo(array[j].getTitulo())<0) && (array[menor].getTitulo().compareTo(array[j].getNome())==0) || (array[menor].getTitulo().compareTo(array[j].getNome())<0)){
-               menor = j;
-            }
-         }
-         swap(menor, i);
-      }
-   }
+  public Lista () {
+     this(1000);
+  }
   
-  public void swap(int i, int j) {
-      Filme temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-   }
-   
-}
+  public Lista (int tamanho){
+     array = new Filme[tamanho];
+     n = 0;
+  }
 
+  public void inserir(Filme x, int pos) throws Exception {
+
+     //validar insercao
+     if(n >= array.length || pos < 0 || pos > n){
+        throw new Exception("Erro ao inserir!");
+     }
+
+     //levar elementos para o fim do array
+     for(int i = n; i > pos; i--){
+        array[i] = array[i-1];
+     }
+
+     array[pos] = x;
+     n++;
+  }
+
+  public void sort() {
+     for (int i = 0; i < (n - 1); i++) {
+        int menor = i;
+        for (int j = (i + 1); j < n; j++){
+           if ((array[menor].getTitulo().compareTo(array[j].getTitulo())<0) /*&& (array[menor].getTitulo().compareTo(array[j].getNome())==0) || (array[menor].getTitulo().compareTo(array[j].getNome())<0)*/){
+              menor = j;
+           }
+        }
+        swap(menor, i);
+     }
+  }
+ 
+  public void swap(int i, int j) {
+     Filme temp = array[i];
+     array[i] = array[j];
+     array[j] = temp;
+  }
+ 
+  public void mostrar (){
+   for(int i = 0; i < n; i++){
+      System.out.print(array[i].imprimir() + "\n");
+   }
+  }
+}
 
 //classe Principal
 class QT1{
-  public static void main(String[] args){
+  public static void main(String[] args)throws Exception{
      MyIO.setCharset("UTF-8");
      String[] leitura = new String[1000];
      int Nentrada = 0;
@@ -339,18 +348,21 @@ class QT1{
       }
       
      Filme filmes[] = new Filme[Nentrada];
+     Lista pegando = new Lista();
      for(int i = 0 ; i < Nentrada;i++){
        filmes[i] = new Filme();
        try {
         filmes[i].lerHtml(leitura[i]);
+        pegando.inserir(filmes[i], 0);
+        pegando.sort();
       } catch (ParseException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
      }
 
-     for(int i = 0;i < Nentrada;i++){
-       MyIO.println(filmes[i].imprimir());
-     }    
+     
+     pegando.mostrar();    
    }
-}   
+}     
+
+

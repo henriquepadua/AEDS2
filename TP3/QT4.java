@@ -181,7 +181,7 @@ class Filme{
    public void lerHtml(String filename) throws ParseException{   
      String line = "";
      String verde = "/tmp/filmes/" + filename;
-     String teste = "/Users/User/Documents/TP2/" + filename;
+     String teste = filename;
      //String teste2 = "/Users/1325905/Documents/TP2/" + filename;
 
      try{
@@ -288,18 +288,33 @@ class Lista{
        n = 0;
     }
 
-    public void sort() {
-        int h = 1;
+    public void inserir(Filme x, int pos) throws Exception {
+      //validar insercao
+      if(n >= array.length || pos < 0 || pos > n){
+          throw new Exception("Erro ao inserir!");
+      }
 
-        do { h = (h * 3) + 1; } while (h < n);
+      //levar elementos para o fim do array
+      for(int i = n; i > pos; i--){
+          array[i] = array[i-1];
+      }
 
-        do {
-        h /= 3;
-        for(int cor = 0; cor < h; cor++){
-            insercaoPorCor(cor, h);
-        }
-        } while (h != 1);
-    }
+      array[pos] = x;
+      n++;
+  }
+
+  public void sort() {
+      int h = 1;
+
+      do { h = (h * 3) + 1; } while (h < n);
+
+      do {
+      h /= 3;
+      for(int cor = 0; cor < h; cor++){
+          insercaoPorCor(cor, h);
+      }
+      } while (h != 1);
+  }
 
 
  /**
@@ -311,39 +326,46 @@ class Lista{
         for (int i = (h + cor); i < n; i+=h) {
         Filme tmp = array[i];
         int j = i - h;
-        while ((j >= 0) && (array[j].getIdioma().compareTo(tmp.getIdioma()))>0 && array[j].getIdioma().compareTo(tmp.getNome())>0 || array[j].getIdioma().compareTo(tmp.getNome())==0) {
+        while ((j >= 0) && (array[j].getIdioma().compareTo(tmp.getIdioma()))>0 /*&& (array[j].getIdioma().compareTo(tmp.getNome())>0 || array[j].getIdioma().compareTo(tmp.getNome())==0)*/) {
             array[j + h] = array[j];
             j-=h;
         }
         array[j + h] = tmp;
         }
-    }    
+    }
+    
+    public void mostrar (){
+      for(int i = 0; i < n; i++){
+          System.out.print(array[i].imprimir() + "\n");
+      }
+    }
 }
 
 class QT4 {
-    public static void main(String[] args){
-        MyIO.setCharset("UTF-8");
-        String[] leitura = new String[1000];
-        int Nentrada = 0;
-   
-        String line = MyIO.readLine();
-         while(!line.contains("FIM")){
-           leitura[Nentrada++] = line;
-           line = MyIO.readLine();
-         }
-         
-        Filme filmes[] = new Filme[Nentrada];
-        for(int i = 0 ; i < Nentrada;i++){
-          filmes[i] = new Filme();
-          try {
-           filmes[i].lerHtml(leitura[i]);
-         } catch (ParseException e) {
-           e.printStackTrace();
-         }
-        }
-   
-        for(int i = 0;i < Nentrada;i++){
-          MyIO.println(filmes[i].imprimir());
-        }    
+    public static void main(String[] args)throws Exception{
+      MyIO.setCharset("UTF-8");
+      String[] leitura = new String[1000];
+      int Nentrada = 0;
+
+      String line = MyIO.readLine();
+      while(!line.contains("FIM")){
+        leitura[Nentrada++] = line;
+        line = MyIO.readLine();
       }
-}
+      
+      Filme filmes[] = new Filme[Nentrada];
+      Lista pegando = new Lista();
+      for(int i = 0 ; i < Nentrada;i++){
+        filmes[i] = new Filme();
+        try {
+        filmes[i].lerHtml(leitura[i]);
+        pegando.inserir(filmes[i], 0);
+        } catch (ParseException e) {
+        e.printStackTrace();
+        }
+      }
+      pegando.sort();
+      pegando.mostrar();    
+    }
+}            
+

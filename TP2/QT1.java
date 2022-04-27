@@ -278,7 +278,7 @@ class Filme{
 
 
 //classe Principal
-class Main{
+class QT1{
   public static void main(String[] args){
      MyIO.setCharset("UTF-8");
      String[] leitura = new String[1000];

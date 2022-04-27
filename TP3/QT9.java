@@ -181,7 +181,7 @@ class Filme{
    public void lerHtml(String filename) throws ParseException{   
      String line = "";
      String verde = "/tmp/filmes/" + filename;
-     String teste = "/Users/User/Documents/TP2/" + filename;
+     String teste = filename;
      //String teste2 = "/Users/1325905/Documents/TP2/" + filename;
 
      try{
@@ -288,6 +288,21 @@ class Lista{
        n = 0;
     }
 
+    public void inserir(Filme x, int pos) throws Exception {
+      //validar insercao
+      if(n >= array.length || pos < 0 || pos > n){
+          throw new Exception("Erro ao inserir!");
+      }
+
+      //levar elementos para o fim do array
+      for(int i = n; i > pos; i--){
+          array[i] = array[i-1];
+      }
+
+      array[pos] = x;
+      n++;
+    }
+
     public void sort() {
         mergesort(0, n-1);
      }
@@ -324,39 +339,45 @@ class Lista{
         Filme filme = new Filme();
         filme.setOrcamento(0x7FFFFFFF);
         //Sentinela no final dos dois arrays
-        a1[i] = a2[j] ;
+        a1[i] = a2[j] = filme;
   
         //Intercalacao propriamente dita
         for(i = j = 0, k = esq; k <= dir; k++){
-           array[k] = (a1[i].getOrcamento() <= a2[j].getOrcamento()) ? a1[i++] : a2[j++];
+           array[k] = (a1[i].getOrcamento() < a2[j].getOrcamento()) ||  (a1[i].getOrcamento() == a2[j].getOrcamento()) ? a1[i++] : a2[j++];
         }
+     }
+
+     public void mostrar (){
+      for(int i = 0; i < n; i++){
+          System.out.print(array[i].imprimir() + "\n");
+      }
      }
 }
 
 class QT9 {
-    public static void main(String[] args){
-        MyIO.setCharset("UTF-8");
-        String[] leitura = new String[1000];
-        int Nentrada = 0;
-   
-        String line = MyIO.readLine();
-         while(!line.contains("FIM")){
-           leitura[Nentrada++] = line;
-           line = MyIO.readLine();
-         }
-         
-        Filme filmes[] = new Filme[Nentrada];
-        for(int i = 0 ; i < Nentrada;i++){
-          filmes[i] = new Filme();
-          try {
-           filmes[i].lerHtml(leitura[i]);
-         } catch (ParseException e) {
-           e.printStackTrace();
-         }
+    public static void main(String[] args)throws Exception{
+      MyIO.setCharset("UTF-8");
+      String[] leitura = new String[1000];
+      int Nentrada = 0;
+
+      String line = MyIO.readLine();
+      while(!line.contains("FIM")){
+        leitura[Nentrada++] = line;
+        line = MyIO.readLine();
+      }
+      
+      Filme filmes[] = new Filme[Nentrada];
+      Lista pegando = new Lista();
+      for(int i = 0 ; i < Nentrada;i++){
+        filmes[i] = new Filme();
+        try {
+        filmes[i].lerHtml(leitura[i]);
+        pegando.inserir(filmes[i], 0);
+        } catch (ParseException e) {
+        e.printStackTrace();
         }
-   
-        for(int i = 0;i < Nentrada;i++){
-          MyIO.println(filmes[i].imprimir());
-        }    
-      }        
+      }
+      pegando.sort();
+      pegando.mostrar();    
+    }
 }
