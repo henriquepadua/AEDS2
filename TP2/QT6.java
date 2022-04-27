@@ -431,8 +431,4 @@ class QT6{
      }
      pegando.mostrar();
    }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> teste
