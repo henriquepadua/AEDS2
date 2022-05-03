@@ -62,20 +62,19 @@ class Filme{
    public float getOrcamento(){return this.Orcamento;};
    public String[] getPalavrachave(){return this.Palavrachave;};   
    public String getPalavrachaveString(){
-     String palavraschave = "";
-     
-     for(String s:this.Palavrachave){
-       palavraschave +=  s + ",";
-       if(s == null){
-         break;
-       }
-       
-       
-     }
-     palavraschave = palavraschave.replaceAll(",null,", "");
-     
-     return palavraschave;
-   }
+    String palavraschave = "";
+    //MyIO.print("[");
+    for(String s:this.Palavrachave){
+      palavraschave +=  s + "," +" ";
+      if(s == null){
+        break;
+      }
+    }
+    palavraschave = palavraschave.replaceAll(", null,", "");
+   // MyIO.print("]");
+    palavraschave.trim();
+    return palavraschave.trim();
+  }
 
  
    //Metodo clone
@@ -343,7 +342,7 @@ class Lista{
   
         //Intercalacao propriamente dita
         for(i = j = 0, k = esq; k <= dir; k++){
-           array[k] = (a1[i].getOrcamento() < a2[j].getOrcamento()) ||  (a1[i].getOrcamento() == a2[j].getOrcamento()) ? a1[i++] : a2[j++];
+           array[k] = ((a1[i].getOrcamento() < a2[j].getOrcamento())) ? a1[i++] : a2[j++];
         }
      }
 
@@ -372,7 +371,7 @@ class QT9 {
         filmes[i] = new Filme();
         try {
         filmes[i].lerHtml(leitura[i]);
-        pegando.inserir(filmes[i], 0);
+        pegando.inserir(filmes[i], 0);        
         } catch (ParseException e) {
         e.printStackTrace();
         }

@@ -65,16 +65,16 @@ class Filme{
      String palavraschave = "";
      
      for(String s:this.Palavrachave){
-       palavraschave +=  s + ",";
+       palavraschave +=  s + ","+" ";
        if(s == null){
          break;
        }
        
        
      }
-     palavraschave = palavraschave.replaceAll(",null,", "");
+     palavraschave = palavraschave.replaceAll(", null,", "");
      
-     return palavraschave;
+     return palavraschave.trim();
    }
 
  
@@ -317,8 +317,8 @@ class Lista{
           int i = esq, j = dir;
           Filme pivo = array[(dir+esq)/2];
           while (i <= j) {
-              while (array[i].getSituacao().compareTo(pivo.getSituacao())<0/* && array[i].getSituacao().compareTo(pivo.getNome())<0 || array[i].getSituacao().compareTo(pivo.getNome())==0*/) i++;
-              while (array[j].getSituacao().compareTo(pivo.getSituacao())>0/* && array[j].getSituacao().compareTo(pivo.getNome())>0 || array[j].getSituacao().compareTo(pivo.getNome())==0 */) j--;
+              while ((array[i].getSituacao().compareTo(pivo.getSituacao())<0) || (array[i].getSituacao().compareTo(pivo.getSituacao())==0) && (array[i].getNome().compareTo(pivo.getNome())<0)) i++;
+              while ((array[j].getSituacao().compareTo(pivo.getSituacao())>0) || (array[j].getSituacao().compareTo(pivo.getSituacao())==0) && (array[j].getNome().compareTo(pivo.getNome())>0)) j--;
               if (i <= j) {
                   swap(i, j);
                   i++;

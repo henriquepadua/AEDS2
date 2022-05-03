@@ -62,20 +62,17 @@ class Filme{
    public float getOrcamento(){return this.Orcamento;};
    public String[] getPalavrachave(){return this.Palavrachave;};   
    public String getPalavrachaveString(){
-     String palavraschave = "";
-     
-     for(String s:this.Palavrachave){
-       palavraschave +=  s + ",";
-       if(s == null){
-         break;
-       }
-       
-       
-     }
-     palavraschave = palavraschave.replaceAll(",null,", "");
-     
-     return palavraschave;
-   }
+    String palavraschave = "";
+    for(String s:this.Palavrachave){
+      palavraschave +=  s + "," +" ";
+      if(s == null){
+        break;
+      }
+    }
+    palavraschave = palavraschave.replaceAll(", null,", "");
+   
+    return palavraschave.trim();
+  }
 
  
    //Metodo clone
@@ -306,7 +303,7 @@ class Lista{
     public void sort() {
 		for (int i = (n - 1); i > 0; i--) {
 			for (int j = 0; j < i; j++) {
-				if (array[j].getDuracao() > array[j + 1].getDuracao()) {
+				if ((array[j].getDuracao() > array[j + 1].getDuracao()) ||  (array[j].getDuracao() == array[j + 1].getDuracao()) && (array[j].getNome().compareTo(array[j + 1].getNome())>0)) {
           swap(j, j+1);
 				}
 			}
@@ -345,11 +342,11 @@ class QT8 {
         try {
         filmes[i].lerHtml(leitura[i]);
         pegando.inserir(filmes[i], 0);
+        pegando.sort();
         } catch (ParseException e) {
         e.printStackTrace();
         }
       }
-      pegando.sort();
       pegando.mostrar();    
     }
 }

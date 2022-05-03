@@ -65,16 +65,15 @@ class Filme{
      String palavraschave = "";
      
      for(String s:this.Palavrachave){
-       palavraschave +=  s + ",";
+       palavraschave +=  s + "," + " ";
        if(s == null){
          break;
        }
        
        
      }
-     palavraschave = palavraschave.replaceAll(",null,", "");
-     
-     return palavraschave;
+     palavraschave = palavraschave.replaceAll(", null,", "");
+     return palavraschave.trim();
    }
 
  
@@ -239,6 +238,7 @@ class Filme{
           while(!line.contains("<p><strong>")){
             line = buffer.readLine();
           }
+          line.trim();
           this.setIdioma(removeTags(pegarIdioma(line)).trim());
 
           line = buffer.readLine();
@@ -333,7 +333,7 @@ class Lista{
   
   
      public void construir(int tamHeap){
-        for(int i = tamHeap; i > 1 && array[i].getGenero().compareTo(array[i/2].getGenero())>0 && array[i].getGenero().compareTo(array[i/2].getNome())>0 || array[i].getGenero().compareTo(array[i/2].getNome())==0 ; i /= 2){
+        for(int i = tamHeap; i > 1 && ((array[i].getGenero().compareTo(array[i/2].getGenero())>0) || ((array[i].getGenero().compareTo(array[i/2].getGenero())==0) && (array[i].getNome().compareTo(array[i/2].getNome())>0))); i /= 2){
            swap(i, i/2);
         }
      }
@@ -343,7 +343,7 @@ class Lista{
         int i = 1;
         while(i <= (tamHeap/2)){
            int filho = getMaiorFilho(i, tamHeap);
-           if(array[i].getGenero().compareTo(array[filho].getGenero())<0 && array[i].getGenero().compareTo(array[filho].getNome())<0 || array[i].getGenero().compareTo(array[filho].getNome())==0){
+           if((array[i].getGenero().compareTo(array[filho].getGenero())<0) || ((array[i].getGenero().compareTo(array[filho].getGenero())==0) && (array[i].getNome().compareTo(array[filho].getNome())<0))){
               swap(i, filho);
               i = filho;
            }else{
@@ -354,7 +354,7 @@ class Lista{
   
      public int getMaiorFilho(int i, int tamHeap){
         int filho;
-        if (2*i == tamHeap || array[2*i].getGenero().compareTo(array[2*i+1].getGenero())>0 && array[2*i].getGenero().compareTo(array[2*i+1].getNome())>0 || array[2*i].getGenero().compareTo(array[2*i+1].getNome())==0){
+        if (2*i == tamHeap || ((array[2*i].getGenero().compareTo(array[2*i+1].getGenero())>0) || (array[2*i].getGenero().compareTo(array[2*i+1].getGenero())==0) && (array[2*i].getNome().compareTo(array[2*i+1].getNome())>0))){
            filho = 2*i;
         } else {
            filho = 2*i + 1;
