@@ -119,17 +119,17 @@ class Filme{
    }
 
    public static String pegarTitulo(String limpa){
-    limpa = limpa.replaceAll("Título original", "");
+    limpa = limpa.replaceAll("T�tulo original", "");
     return limpa;
    }
 
    public static String pegarSituacao(String limpa){
-     limpa = limpa.replaceAll("Situação", "");
+     limpa = limpa.replaceAll("Situa��o", "");
      return limpa;
    }
 
    public static String pegarOrcamento(String limpa){
-     limpa = limpa.replaceAll("Orçamento $", "");
+     limpa = limpa.replaceAll("Or�amento $", "");
      return limpa;
    }
 
@@ -227,7 +227,8 @@ class Filme{
             line = buffer.readLine();
           }
           if(line.contains("p class=\"wrap\"")){
-            this.setTitulo(removeTags(pegarTitulo(line)).trim());
+            line = line.trim().substring(49, line.trim().length() - 4).trim();
+            this.setTitulo(line);
           }
           if(line.contains("<strong><bdi>")){
             this.Titulo = this.Nome;
@@ -245,8 +246,8 @@ class Filme{
           this.setIdioma(removeTags(pegarIdioma(line)).trim());
 
           line = buffer.readLine();
-          while(!line.contains("Orçamento</bdi>"));
-            String aux = removeTags(line.replace("Orçamento", " ")).trim();
+          while(!line.contains("Or�amento</bdi>"));
+            String aux = removeTags(line.replace("Or�amento", " ")).trim();
             this.setOrcamento((aux.equals("-")) ? 0.0F : convertBudget(aux));
          
           String[] entrada = new String[30];
@@ -310,15 +311,15 @@ class No {
 	}
 
 	/**
-	 * Cálculo do número de níveis a partir de um vértice
+	 * C�lculo do n�mero de n�veis a partir de um v�rtice
 	 */
 	public void setNivel() {
 		this.nivel = 1 + Math.max(getNivel(esq), getNivel(dir));
 	}
 
 	/**
-	 * Retorna o número de níveis a partir de um vértice
-	 * @param no nó que se deseja o nível.
+	 * Retorna o n�mero de n�veis a partir de um v�rtice
+	 * @param no n� que se deseja o n�vel.
 	 */
 	public static int getNivel(No no) {
 		return (no == null) ? 0 : no.nivel;
@@ -336,6 +337,8 @@ class AVL {
 	}
 
 	public boolean pesquisar(String x) {
+    System.out.println(x);
+    System.out.print("raiz ");
 		return pesquisar(x, raiz);
 	}
 
@@ -346,8 +349,10 @@ class AVL {
 		} else if (x.compareTo(i.elemento) == 0) {
 			resp = true;
 		} else if (x.compareTo(i.elemento) < 0) {
+      System.out.print("esq ");
 			resp = pesquisar(x, i.esq);
 		} else {
+      System.out.print("dir ");
 			resp = pesquisar(x, i.dir);
 		}
 		return resp;
@@ -470,48 +475,54 @@ class AVL {
 
 
 class QT3{
-    public static void main(String[] args) throws Exception{
-        Scanner sc = new Scanner(System.in);
-        AVL arvore1 = new AVL();
-        String[] leitura = new String[1000];
-        int Nentrada = 0,Nentrada2 = 0;
+  public static void main(String[] args) throws Exception{
+    Scanner sc = new Scanner(System.in);
+    AVL arvore = new AVL();
+    String[] leitura = new String[1000];
+    int Nentrada = 0,Nentrada2 = 0;
 
-        String line = sc.nextLine();
-        while(!line.contains("FIM")){
-            leitura[Nentrada++] = line;
-            line = sc.nextLine();
+    String line = MyIO.readLine();
+    while(!line.contains("FIM")){
+        leitura[Nentrada++] = line;
+        line = MyIO.readLine();
+    }
+
+    for(int i = 0;i < Nentrada ;i++){
+      Filme filme = new Filme();
+      filme.lerHtml(leitura[i]);
+      arvore.inserir(filme);
+    }
+
+    int inteiro = MyIO.readInt();
+    for(int i = 0;i< inteiro;i++){
+        line = MyIO.readLine();
+        
+
+        if(line.charAt(0) == 'I'){
+          Filme filme = new Filme();  
+          line = line.substring(2, line.length());
+          filme.lerHtml(line);
+          arvore.inserir(filme);
         }
 
-        int inteiro = sc.nextInt();
-        for(int i = 0;i< inteiro;i++){
-          try{
-            line = sc.nextLine();
-            if(line.contains("I")){
-              Filme filme = new Filme();
-              filme.lerHtml(line.substring(2,line.length()));
-              arvore1.inserir(filme);
-            }
-            else if(line.contains("R")){
-              line = line.substring(2, line.length());
-              arvore1.remover(line);
-            }
-          }catch(NullPointerException e){
-            e.printStackTrace();
-         }catch(ParseException e){
-            e.printStackTrace();
-         }catch(Exception e){
-            e.printStackTrace();
-         }
+        else if(line.charAt(0) == 'R'){
+          line = line.substring(2, line.length());
+          //System.out.println("->>" +line);
+          arvore.remover(line);
         }
+    }
 
-        line = sc.nextLine(); 
+        line = MyIO.readLine();  
         while(!line.contains("FIM")){
-          if(arvore1.pesquisar(line) == true){
-            System.out.println("SIM");
+          if(arvore.pesquisar(line) == true){
+           System.out.println("SIM");
+            //line = sc.nextLine();
           }else{
-            System.out.println("NAO");
+           System.out.println("NAO");
+            //line = sc.nextLine();
           }
-          line = sc.nextLine();
-        }
-  }
+          line = MyIO.readLine();
+      }  
+      //arvore.caminharCentral();
+}
 }

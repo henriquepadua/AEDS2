@@ -123,7 +123,7 @@ class Filme{
    }
 
    public static String pegarTitulo(String limpa){
-    limpa = limpa.replaceAll("Título original", "");
+    limpa = limpa.replaceAll("Titulo original", "");
     return limpa;
    }
 
@@ -231,7 +231,9 @@ class Filme{
             line = buffer.readLine();
           }
           if(line.contains("p class=\"wrap\"")){
-            this.setTitulo(removeTags(pegarTitulo(line)).trim());
+            line = line.trim().substring(49, line.trim().length() - 4).trim();
+           // System.out.println("Titulo  da linha " + line);
+            this.setTitulo(line);
           }
           if(line.contains("<strong><bdi>")){
             this.Titulo = this.Nome;
@@ -285,10 +287,9 @@ class Filme{
 class Hash1 {
     String tabela[];
     int m;
-    final int NULO = -1;
  
     public Hash1() {
-       this(30);
+       this(21);
     }
  
     public Hash1(int m) {
@@ -300,33 +301,32 @@ class Hash1 {
     }
  
     public int h(String elemento) {
-        String s = elemento;
         int j = 0;
-        byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
         for(int i = 0;i < elemento.length();i++){
-            j = j + bytes[i];     
+            j = j + elemento.charAt(i);     
         }
        return j % m;
     }
  
     public int reh(String elemento) {
-        String s = elemento;
         int j = 0;
-        byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
         for(int i = 0;i < elemento.length();i++){
-            j = j + bytes[i];     
+            j = j + elemento.charAt(i);     
         }
        return ++j % m;
     }
  
     public boolean inserir(String elemento) {
+      //System.out.println("->>>>elemento " + elemento);
        boolean resp = false;
        if (elemento != null) {
           int pos = h(elemento);
           if (tabela[pos] == null) {
+            //System.out.println("->>>>elementohash " + elemento);
              tabela[pos] = elemento;
              resp = true;
           } else {
+            //System.out.println("->>>>elementorehash " + elemento);
              pos = reh(elemento);
              if (tabela[pos] == null) {
                 tabela[pos] = elemento;
@@ -334,26 +334,40 @@ class Hash1 {
              }
           }
        }
+       //System.out.println("->>>>resp " + resp);
        return resp;
     }
  
     public boolean pesquisar(String elemento) {
+      System.out.println("=> " + elemento);
        boolean resp = false;
        int pos = h(elemento);
-       if (tabela[pos].compareTo(elemento) == 0) {
+       if(tabela[pos] == null){
+        resp = false;
+        //System.out.println("elemento " + elemento + " pos " + pos);
+       }
+       else if (tabela[pos].compareTo(elemento) == 0) {
           resp = true;
        } else if (tabela[pos] != null) {
           pos = reh(elemento);
-          if (tabela[pos].compareTo(elemento) == 0) {
+          if(tabela[pos] == null){
+            resp = false;
+          }else if (tabela[pos].compareTo(elemento) == 0) {
              resp = true;
           }
+       }  
+
+       if(resp == true){
+        System.out.println("Posicao: " +  pos);
        }
+
+       
        return resp;
     }
-
+  }
 class QT6 {
     public static void main(String[] args)throws Exception{
-      MyIO.setCharset("ISO-8859-1");
+      //MyIO.setCharset("ISO-8859-1");
       Scanner sc = new Scanner(System.in);
       String[] leitura = new String[1000];
       int Nentrada = 0;
@@ -363,28 +377,22 @@ class QT6 {
         leitura[Nentrada++] = line;
         line = sc.nextLine();
       }      
-      Filme filmes[] = new Filme[Nentrada];
+
       Hash1 pegando = new Hash1();
-      for(int i = 0 ; i < Nentrada;i++){
-        filmes[i] = new Filme();
-        try {
-        filmes[i].lerHtml(leitura[i]);
-        String s = filmes[i].getTitulo();
-        pegando.inserir(s);
-        } catch (ParseException e) {
-        e.printStackTrace();
-        }
+      for(int i = 0;i < Nentrada ;i++){
+        Filme filme = new Filme();
+        filme.lerHtml(leitura[i]);
+        pegando.inserir(filme.getTitulo());
       }
 
       line = sc.nextLine();
       while(!line.contains("FIM")){
         if(pegando.pesquisar(line) == true){
-            line = sc.nextLine();
+
         }else{
             System.out.println("NAO");
-            line = sc.nextLine();
         }
+        line = sc.nextLine();
       }
     }
-}
-}            
+}      

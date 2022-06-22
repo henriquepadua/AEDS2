@@ -120,17 +120,17 @@ class Filme{
    }
 
    public static String pegarTitulo(String limpa){
-    limpa = limpa.replaceAll("Título original", "");
+    limpa = limpa.replaceAll("T?tulo original", "");
     return limpa;
    }
 
    public static String pegarSituacao(String limpa){
-     limpa = limpa.replaceAll("Situação", "");
+     limpa = limpa.replaceAll("Situa??o", "");
      return limpa;
    }
 
    public static String pegarOrcamento(String limpa){
-     limpa = limpa.replaceAll("Orçamento $", "");
+     limpa = limpa.replaceAll("Or?amento $", "");
      return limpa;
    }
 
@@ -228,7 +228,8 @@ class Filme{
             line = buffer.readLine();
           }
           if(line.contains("p class=\"wrap\"")){
-            this.setTitulo(removeTags(pegarTitulo(line)).trim());
+            line = line.trim().substring(49, line.trim().length() - 4).trim();
+            this.setTitulo(line);
           }
           if(line.contains("<strong><bdi>")){
             this.Titulo = this.Nome;
@@ -298,12 +299,18 @@ class Lista {
 	private Celula primeiro; // Primeira celula: SEM elemento valido.
 	private Celula ultimo; // Ultima celula: COM elemento valido.
 
+	/**
+	 * Construtor da classe: Instancia uma celula (primeira e ultima).
+	 */
 	public Lista() {
 		primeiro = new Celula(null);
 		ultimo = primeiro;
 	}
 
-    public void mostrar() {
+	/**
+	 * Mostra os elementos separados por espacos.
+	 */
+	public void mostrar() {
 		System.out.print("[ "); // Comeca a mostrar.
 		for (Celula i = primeiro.prox; i != null; i = i.prox) {
 			System.out.print(i.elemento + " ");
@@ -311,6 +318,12 @@ class Lista {
 		System.out.println("] "); // Termina de mostrar.
 	}
 
+	/**
+	 * Procura um elemento e retorna se ele existe.
+	 * @param x Elemento a pesquisar.
+	 * @return <code>true</code> se o elemento existir,
+	 * <code>false</code> em caso contrario.
+	 */
 	public boolean pesquisar(String x) {
 		boolean retorno = false;
 		for (Celula i = primeiro.prox; i != null; i = i.prox) {
@@ -322,146 +335,92 @@ class Lista {
 		return retorno;
 	}
 
+	/**
+	 * Insere um elemento na primeira posicao da sequencia.
+	 * @param elemento Elemento a inserir.
+	 */
 	public void inserirInicio(String elemento) {
 		Celula tmp = new Celula(elemento);
-      tmp.prox = primeiro.prox;
+    tmp.prox = primeiro.prox;
 		primeiro.prox = tmp;
 		if (primeiro == ultimo) {
 			ultimo = tmp;
 		}
       tmp = null;
 	}
-
-	public void inserirFim(String elemento) {
-		Celula tmp = new Celula(elemento);
-		ultimo.prox = tmp;
-		ultimo = ultimo.prox;
-      tmp = null;
-	}
-
-	public String removerInicio() throws Exception {
-      String resp = null;
-
-		if (primeiro == ultimo) {
-			throw new Exception("Erro ao remover (vazia)!");
-		}else{
-         primeiro = primeiro.prox;
-         resp = primeiro.elemento;
-      }
-
-		return resp;
-	}
-
-	public String removerFim() throws Exception {
-      String resp =  null;
-      Celula i = null;
-
-		if (primeiro == ultimo) {
-			throw new Exception("Erro ao remover (vazia)!");
-		} else {
-
-         resp = ultimo.elemento;
-
-		   // Caminhar ate a penultima celula:
-         for(i = primeiro; i.prox != ultimo; i = i.prox);
-
-         ultimo = i;
-         i = ultimo.prox = null;
-      }
-
-		return resp;
-	}
 }
 
-
 class HashIndiretoLista {
-    Lista tabela[];
-    int tamanho;
-    final int NULO = -1;
- 
-    public HashIndiretoLista() {
-       this(7);
+  Lista tabela[];
+  int tamanho;
+
+  public HashIndiretoLista() {
+     this(21);
+  }
+
+  public HashIndiretoLista(int tamanho) {
+     this.tamanho = tamanho;
+     tabela = new Lista[tamanho];
+     for (int i = 0; i < tamanho; i++) {
+        tabela[i] = new Lista();
+     }
+  }
+
+  public int h(String elemento) {
+    String s = elemento;
+    int j = 0;
+    //byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
+    for(int i = 0;i < elemento.length();i++){
+        j = j + elemento.charAt(i);     
     }
- 
-    public HashIndiretoLista(int tamanho) {
-       this.tamanho = tamanho;
-       tabela = new Lista[tamanho];
-       for (int i = 0; i < tamanho; i++) {
-          tabela[i] = new Lista();
-       }
-    }
- 
-    public int h(String elemento) {
-        String s = elemento;
-        int j = 0;
-        byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
-        for(int i = 0;i < elemento.length();i++){
-            j = j + bytes[i];     
-        }
-       return j % tamanho;
-    }
- 
-    public boolean pesquisar(String elemento) {
-       boolean resp = false;
-       System.out.println("=>" + elemento);
-       int pos = h(elemento);
-       resp = tabela[pos].pesquisar(elemento);
-       if(resp == true){
-        System.out.println("Posicao :" + pos);
-       }
-       return resp;
-    }
- 
-    public void inserirInicio(String elemento) {
-       int pos = h(elemento);
-       tabela[pos].inserirInicio(elemento);
-    }
- 
-    public String remover(String elemento) throws Exception {
-       String resp = null;
-       if (pesquisar(elemento) == false) {
-          throw new Exception("Erro ao remover!");
-       } else {
-          int pos = h(elemento);
-          resp = tabela[pos].removerFim();
-       }
-       return resp;
-    }
- }
+     return j % tamanho;
+  }
+
+  public boolean pesquisar(String elemento) {
+    System.out.println("=> " + elemento);
+     int pos = h(elemento);
+     //System.out.println("Posicao1 :" + pos);
+     if(tabela[pos].pesquisar(elemento) == true){
+      System.out.println("Posicao: " + pos);
+     }
+     return tabela[pos].pesquisar(elemento);
+  }
+
+  public void inserirInicio(String elemento) {
+     int pos = h(elemento);
+     //System.out.println("Posicao :" + pos);
+     tabela[pos].inserirInicio(elemento);
+  }
+}
 
 class QT7{
-    public static void main(String[] args)throws Exception{
-        MyIO.setCharset("ISO-8859-1");
-        Scanner sc = new Scanner(System.in);
-        String[] leitura = new String[1000];
-        int Nentrada = 0;
-  
-        String line = sc.nextLine();
-        while(!line.contains("FIM")){
-          leitura[Nentrada++] = line;
-          line = sc.nextLine();
-        }      
-        Filme filmes[] = new Filme[Nentrada];
-        HashIndiretoLista pegando = new HashIndiretoLista();
-        for(int i = 0 ; i < Nentrada;i++){
-          filmes[i] = new Filme();
-          try {
-          filmes[i].lerHtml(leitura[i]);
-          String s = filmes[i].getTitulo();
-          pegando.inserirInicio(s);
-          } catch (ParseException e) {
-          e.printStackTrace();
-          }
-        }
-  
-        line = sc.nextLine();
-        while(!line.contains("FIM")){
-          if(pegando.pesquisar(line) == true){
-              line = sc.nextLine();
-          }else{
-              System.out.println("NAO");
-              line = sc.nextLine();
-          }
-        }
+  public static void main(String[] args)throws Exception{
+    //MyIO.setCharset("ISO-8859-1");
+    Scanner sc = new Scanner(System.in);
+    String[] leitura = new String[1000];
+    int Nentrada = 0;
+
+    String line = sc.nextLine();
+    while(!line.contains("FIM")){
+      leitura[Nentrada++] = line;
+      line = sc.nextLine();
+    }      
+
+    HashIndiretoLista pegando = new HashIndiretoLista();
+    for(int i = 0;i < Nentrada ;i++){
+      Filme filme = new Filme();
+      filme.lerHtml(leitura[i]);
+      pegando.inserirInicio(filme.getTitulo());
+    }
+
+    line = sc.nextLine();
+    while(!line.contains("FIM")){
+      if(pegando.pesquisar(line) == true){
+
+      }else{
+          System.out.println("NAO");
       }
+      line = sc.nextLine();
+    }
+  }
   } 

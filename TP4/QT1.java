@@ -119,17 +119,17 @@ class Filme{
    }
 
    public static String pegarTitulo(String limpa){
-    limpa = limpa.replaceAll("Título original", "");
+    limpa = limpa.replaceAll("Titulo original", "");
     return limpa;
    }
 
    public static String pegarSituacao(String limpa){
-     limpa = limpa.replaceAll("Situação", "");
+     limpa = limpa.replaceAll("Situa??o", "");
      return limpa;
    }
 
    public static String pegarOrcamento(String limpa){
-     limpa = limpa.replaceAll("Orçamento $", "");
+     limpa = limpa.replaceAll("Or?amento $", "");
      return limpa;
    }
 
@@ -227,7 +227,9 @@ class Filme{
             line = buffer.readLine();
           }
           if(line.contains("p class=\"wrap\"")){
-            this.setTitulo(removeTags(pegarTitulo(line)).trim());
+            line = line.trim().substring(49, line.trim().length() - 4).trim();
+           // System.out.println("Titulo  da linha " + line);
+            this.setTitulo(line);
           }
           if(line.contains("<strong><bdi>")){
             this.Titulo = this.Nome;
@@ -245,8 +247,8 @@ class Filme{
           this.setIdioma(removeTags(pegarIdioma(line)).trim());
 
           line = buffer.readLine();
-          while(!line.contains("Orçamento</bdi>"));
-            String aux = removeTags(line.replace("Orçamento", " ")).trim();
+          while(!line.contains("Or�amento</bdi>"));
+            String aux = removeTags(line.replace("Or�amento", " ")).trim();
             this.setOrcamento((aux.equals("-")) ? 0.0F : convertBudget(aux));
          
           String[] entrada = new String[30];
@@ -280,7 +282,6 @@ class Filme{
 
 class No{
     public String elemento2;
-    public Filme elemento;
     public No esq,dir;
 
     public No(){
@@ -288,21 +289,6 @@ class No{
     }
     public No(String elemento2){
         this.elemento2 = elemento2;
-        this.elemento = null;
-        this.esq = null;
-        this.dir = null;
-    }
-}
-
-class No2{
-    public String elemento;
-    public No esq,dir;
-
-    public No2(){
-        this(null);
-    }
-    public No2(String elemento){
-        this.elemento = elemento;
         this.esq = null;
         this.dir = null;
     }
@@ -310,11 +296,9 @@ class No2{
 
 class ArvoreBinaria{
     public No raiz;
-    public No2 auxiliar;
 
     public ArvoreBinaria(){
         raiz = null;
-        auxiliar = null;
     }
 
     public boolean pesquisar(String elemento){
@@ -340,17 +324,20 @@ class ArvoreBinaria{
     }
 
     public void inserir(Filme elemento) throws Exception{
-        raiz = inserir(elemento.getTitulo(),raiz);
+        raiz = inserir(elemento,raiz);
     }
 
-    private No inserir(String elemento,No i)throws Exception{
+    private No inserir(Filme elemento,No i)throws Exception{
         if(i == null){
-            i = new No(elemento);
+            i = new No(elemento.getTitulo());
+            return i;
         }
-        else if(elemento.compareTo(i.elemento2) < 0){
+        //System.out.println("->>>Titulo " + elemento.getTitulo());
+        if(elemento.getTitulo().compareTo(i.elemento2) < 0){
+
             i.esq = inserir(elemento,i.esq);
         }
-        else if(elemento.compareTo(i.elemento2) > 0){
+        else if(elemento.getTitulo().compareTo(i.elemento2) > 0){
             i.dir = inserir(elemento,i.dir);
         }
         else{          
@@ -367,8 +354,10 @@ class ArvoreBinaria{
          if(i == null){
           //System.out.println("->" + elemento + "<-");
            //throw new Exception("Arvore vazia");
+           return null;
          }
-         else if(elemento.compareTo(i.elemento2) < 0){
+         //System.out.println("elemento " + elemento + " elemento do no " + i.elemento2);
+         if(elemento.compareTo(i.elemento2) < 0){
            i.esq = remover(elemento, i.esq);
          }
          else if(elemento.compareTo(i.elemento2) > 0){
@@ -417,48 +406,54 @@ class ArvoreBinaria{
 }
 
 class QT1{
-    public static void main(String[] args) throws Exception{
-        Scanner sc = new Scanner(System.in);
-        ArvoreBinaria arvore = new ArvoreBinaria();
-        String[] leitura = new String[1000];
-        int Nentrada = 0,Nentrada2 = 0;
+  public static void main(String[] args) throws Exception{
+      Scanner sc = new Scanner(System.in);
+      ArvoreBinaria arvore = new ArvoreBinaria();
+      String[] leitura = new String[1000];
+      int Nentrada = 0,Nentrada2 = 0;
 
-        String line = sc.nextLine();
-        while(!line.contains("FIM")){
-            leitura[Nentrada++] = line;
-            line = sc.nextLine();
-        }
+      String line = MyIO.readLine();
+      while(!line.contains("FIM")){
+          leitura[Nentrada++] = line;
+          line = MyIO.readLine();
+      }
 
-        int inteiro = sc.nextInt();
-        for(int i = 0;i< inteiro;i++){
-          try{
-            line = sc.nextLine();
-            if(line.contains("I")){
-              Filme filme = new Filme();
-              filme.lerHtml(line.substring(2,line.length()));
-              arvore.inserir(filme);
-            }
-            else if(line.contains("R")){
-              line = line.substring(2, line.length());
-              arvore.remover(line);
-            }
-          }catch(NullPointerException e){
-            e.printStackTrace();
-         }catch(ParseException e){
-            e.printStackTrace();
-         }catch(Exception e){
-            e.printStackTrace();
-         }
-        }
+      for(int i = 0;i < Nentrada ;i++){
+        Filme filme = new Filme();
+        filme.lerHtml(leitura[i]);
+        arvore.inserir(filme);
+      }
 
-        line = sc.nextLine(); 
-        while(!line.contains("FIM")){
-          if(arvore.pesquisar(line) == true){
-            System.out.println("SIM");
-          }else{
-            System.out.println("NAO");
+      int inteiro = MyIO.readInt();
+      for(int i = 0;i< inteiro;i++){
+          line = MyIO.readLine();
+          
+
+          if(line.charAt(0) == 'I'){
+            Filme filme = new Filme();  
+            line = line.substring(2, line.length());
+            filme.lerHtml(line);
+            arvore.inserir(filme);
           }
-          line = sc.nextLine();
-        }
-  }
+
+          else if(line.charAt(0) == 'R'){
+            line = line.substring(2, line.length());
+            //System.out.println("->>" +line);
+            arvore.remover(line);
+          }
+      }
+
+          line = MyIO.readLine();  
+          while(!line.contains("FIM")){
+            if(arvore.pesquisar(line) == true){
+             System.out.println("SIM");
+              //line = sc.nextLine();
+            }else{
+             System.out.println("NAO");
+              //line = sc.nextLine();
+            }
+            line = MyIO.readLine();
+        }  
+        //arvore.caminharCentral();
+}
 }

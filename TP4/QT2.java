@@ -119,17 +119,17 @@ class Filme{
    }
 
    public static String pegarTitulo(String limpa){
-    limpa = limpa.replaceAll("T�tulo original", "");
+    limpa = limpa.replaceAll("T?tulo original", "");
     return limpa;
    }
 
    public static String pegarSituacao(String limpa){
-     limpa = limpa.replaceAll("Situa��o", "");
+     limpa = limpa.replaceAll("Situa??o", "");
      return limpa;
    }
 
    public static String pegarOrcamento(String limpa){
-     limpa = limpa.replaceAll("Or�amento $", "");
+     limpa = limpa.replaceAll("Or?amento $", "");
      return limpa;
    }
 
@@ -384,6 +384,7 @@ class AA{
 
     public boolean Pesquisar(String s){
         System.out.println("=> " + s);
+        System.out.print("raiz ");
         return Pesquisar(s,raiz);
     }
 
@@ -403,8 +404,8 @@ class AA{
             resp = Pesquisar(s,raiz.esq);
             if(resp == false){
                 System.out.print("dir ");
-                resp = Pesquisar(s, raiz.dir);
-            }
+                resp = Pesquisar(s,raiz.dir);
+            }    
         }
 
         return resp;
@@ -416,15 +417,16 @@ class AA{
             resp = false;
         }
         
-        else if(raiz.elemento.getTitulo().compareTo(s) == 0){
+        else if(s.compareTo(raiz.elemento.getTitulo()) == 0){
+          //System.out.println("dsfsd");
             resp = true;
         }
 
         else{
-            System.out.print("  ESQ ");
+            System.out.print("ESQ ");
             resp = Pesquisar(raiz.esq, s);
             if(resp == false){
-                System.out.print("  DIR ");
+                System.out.print("DIR ");
                 resp = Pesquisar(raiz.dir, s);
             }
         }
@@ -452,48 +454,47 @@ class AA{
 }
 
 class QT2{
-    public static void main(String[] args){
-        AA arvore = new AA();
-        Scanner sc = new Scanner(System.in);
-        String[] leitura = new String[1000];
-        int Nentrada = 0;
+  public static void main(String[] args) throws Exception{
+    Scanner sc = new Scanner(System.in);
+    AA arvore = new AA();
+    String[] leitura = new String[1000];
+    int Nentrada = 0,Nentrada2 = 0;
 
-        String line = sc.nextLine();
-        while(!line.contains("FIM")){
-            leitura[Nentrada++] = line;
-            line = sc.nextLine();
-        }
+    String line = MyIO.readLine();
+    while(!line.contains("FIM")){
+        leitura[Nentrada++] = line;
+        line = MyIO.readLine();
+    }
 
-        int inteiro = sc.nextInt();
-        for(int i = 0;i < inteiro;i++){
-          try{
-            line = sc.nextLine();
-            if(line.contains("I")){
-              Filme filme = new Filme();
-              line = line.substring(2, line.length());
-              System.out.println(line);
-              filme.lerHtml(line);
-              System.out.println(line);
-              arvore.inserir(filme);
-            }
-          }catch(NullPointerException e){
-            e.printStackTrace();
-          }catch(ParseException e){
-            e.printStackTrace();
-          }catch(Exception e){
-            e.printStackTrace();
-          }
+    for(int i = 0;i < Nentrada ;i++){
+      Filme filme = new Filme();
+      filme.lerHtml(leitura[i]);
+      arvore.inserir(filme);
+    }
+
+    int inteiro = MyIO.readInt();
+    for(int i = 0;i< inteiro;i++){
+        line = MyIO.readLine();
+        if(line.charAt(0) == 'I'){
+          Filme filme = new Filme();  
+          line = line.substring(2, line.length());
+          filme.lerHtml(line);
+          arvore.inserir(filme);
         }
-        
-        line = sc.nextLine(); 
+       
+    }
+
+        line = MyIO.readLine();  
         while(!line.contains("FIM")){
           if(arvore.Pesquisar(line) == true){
-            System.out.println("SIM");
-            line = sc.nextLine();
+           System.out.println("SIM");
+            //line = sc.nextLine();
           }else{
-            System.out.println("NAO");
-            line = sc.nextLine();
-          } 
-        }
-    }
+           System.out.println("NAO");
+            //line = sc.nextLine();
+          }
+          line = MyIO.readLine();
+      }  
+      //arvore.caminharCentral();
+}
 }

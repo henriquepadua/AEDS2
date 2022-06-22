@@ -120,17 +120,17 @@ class Filme{
    }
 
    public static String pegarTitulo(String limpa){
-    limpa = limpa.replaceAll("Título original", "");
+    limpa = limpa.replaceAll("T�tulo original", "");
     return limpa;
    }
 
    public static String pegarSituacao(String limpa){
-     limpa = limpa.replaceAll("Situação", "");
+     limpa = limpa.replaceAll("Situa��o", "");
      return limpa;
    }
 
    public static String pegarOrcamento(String limpa){
-     limpa = limpa.replaceAll("Orçamento $", "");
+     limpa = limpa.replaceAll("Or�amento $", "");
      return limpa;
    }
 
@@ -302,12 +302,12 @@ class Hash {
  
     public int h(String elemento) {
         String s = elemento;
-        int i = 0;
         int j = 0;
         byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
-        for(i = 0;i < elemento.length();i++){
+        for(int i = 0;i < elemento.length();i++){
             j = j + bytes[i];     
         }
+        //System.out.println(j % m1);
        return j % m1;
     }
  
@@ -332,17 +332,23 @@ class Hash {
       System.out.println("=> " + elemento);
        boolean resp = false;
        int pos = h(elemento);
-       if (tabela[pos] == elemento) {
+       if(tabela[pos] == null){
+        resp = false;
+       }
+       else if(tabela[pos].compareTo(elemento) == 0) {
           resp = true;
        } else if (tabela[pos] != null) {
           for (int i = 0; i < reserva; i++) {
-             if (tabela[m1 + i] == elemento) {
+             if (tabela[m1 + i].compareTo(elemento) == 0) {
                 resp = true;
+                pos = m1 + i;
                 i = reserva;
              }
           }
        }
-       System.out.println("Posicao: " + pos);
+       if(resp == true){
+        System.out.println("Posicao: " + pos); 
+       }
        return resp;
     }
  }
@@ -350,6 +356,7 @@ class Hash {
 
 class QT5 {
     public static void main(String[] args)throws Exception{
+      MyIO.setCharset("ISO-8859-1");
       Scanner sc = new Scanner(System.in);
       String[] leitura = new String[1000];
       int Nentrada = 0;
@@ -359,6 +366,7 @@ class QT5 {
         leitura[Nentrada++] = line;
         line = sc.nextLine();
       }      
+      
       Filme filmes[] = new Filme[Nentrada];
       Hash pegando = new Hash();
       for(int i = 0 ; i < Nentrada;i++){
@@ -366,7 +374,6 @@ class QT5 {
         try {
         filmes[i].lerHtml(leitura[i]);
         String s = filmes[i].getTitulo();
-        //System.out.println(s);
         pegando.inserir(s);
         } catch (ParseException e) {
         e.printStackTrace();
@@ -376,7 +383,6 @@ class QT5 {
       line = sc.nextLine();
       while(!line.contains("FIM")){
         if(pegando.pesquisar(line) == true){
-            System.out.println("SIM");
             line = sc.nextLine();
         }else{
             System.out.println("NAO");
