@@ -247,8 +247,8 @@ class Filme{
           this.setIdioma(removeTags(pegarIdioma(line)).trim());
 
           line = buffer.readLine();
-          while(!line.contains("Orï¿½amento</bdi>"));
-            String aux = removeTags(line.replace("Orï¿½amento", " ")).trim();
+          while(!line.contains("Orçamento</bdi>"));
+            String aux = removeTags(line.replace("Orçamento", " ")).trim();
             this.setOrcamento((aux.equals("-")) ? 0.0F : convertBudget(aux));
          
           String[] entrada = new String[30];
@@ -324,7 +324,7 @@ class Alvinegra {
      */
     public boolean pesquisar(String elemento) {
         System.out.println(elemento);
-        System.out.print("dir ");
+        System.out.print("raiz ");
        return pesquisar(elemento, raiz);
     }
  
@@ -340,7 +340,7 @@ class Alvinegra {
        boolean resp;
        if (i == null) {
           resp = false;
-       } else if (elemento == i.elemento) {
+       } else if (elemento.compareTo(i.elemento) == 0) {
           resp = true;
        } else if (elemento.compareTo(i.elemento) < 0) {
           System.out.print("esq ");
@@ -359,71 +359,66 @@ class Alvinegra {
      * @param elemento Elemento a ser inserido.
      * @throws Exception Se o elemento existir.
      */
-    public void inserir(Filme elemento)throws Exception {
-        inserir(elemento.getTitulo());
-    }
+    public void inserir(Filme elemento){
+      inserir(elemento.getTitulo());
+  }
 
-    public void inserir(String elemento) throws Exception {
-       // Se a arvore estiver vazia
-       if (raiz == null) {
+  private void inserir(String elemento){
+      //Se a arvore tiver vazia insere os elementos
+      if(raiz == null){
           raiz = new No(elemento);
-      //    System.out.println("Antes, zero elementos. Agora, raiz(" + raiz.elemento + ").");
- 
-       // Senao, se a arvore tiver um elemento
-       } else if (raiz.esq == null && raiz.dir == null) {
-          if (elemento.compareTo(raiz.elemento) < 0) {
-             raiz.esq = new No(elemento);
-  //           System.out.println("Antes, um elemento. Agora, raiz(" + raiz.elemento + ") e esq(" + raiz.esq.elemento + ").");
-          } else {
-             raiz.dir = new No(elemento);
-    //         System.out.println("Antes, um elemento. Agora, raiz(" + raiz.elemento + ") e dir(" + raiz.dir.elemento + ").");
+      }
+
+      //Se a arvore tiver so um elemento vai inserir na esquerda se for menor ou na direita se for maior
+      else if(raiz.dir == null && raiz.esq == null){//verifica se os dois sao null pois vai chamar recursivamente apontando para esq ou para dir
+          if(elemento.compareTo(raiz.elemento) < 0){// se o elemento a ser inserido for menor que a raiz insere ele a esquerda
+              raiz.esq = new No(elemento);
+          }else{//caso contrario insere a sua direita
+              raiz.dir = new No(elemento);
           }
- 
-       // Senao, se a arvore tiver dois elementos (raiz e dir)
-       } else if (raiz.esq == null) {
-          if (elemento.compareTo(raiz.elemento) < 0) {
-             raiz.esq = new No(elemento);
-         //    System.out.println("Antes, dois elementos(A). Agora, raiz(" + raiz.elemento + "), esq (" + raiz.esq.elemento + ") e dir(" + raiz.dir.elemento + ").");
- 
-          } else if (elemento.compareTo(raiz.dir.elemento) < 0) {
-             raiz.esq = new No(raiz.elemento);
-             raiz.elemento = elemento;
-//             System.out.println("Antes, dois elementos(B). Agora, raiz(" + raiz.elemento + "), esq (" + raiz.esq.elemento + ") e dir(" + raiz.dir.elemento + ").");
- 
-          } else {
-             raiz.esq = new No(raiz.elemento);
-             raiz.elemento = raiz.dir.elemento;
-             raiz.dir.elemento = elemento;
-             //System.out.println("Antes, dois elementos(C). Agora, raiz(" + raiz.elemento + "), esq (" + raiz.esq.elemento + ") e dir(" + raiz.dir.elemento + ").");
+      }
+
+      //Se a arvore tiver dois elemento a (raiz) e a (esquerda)
+      else if(raiz.dir == null){
+          if(elemento.compareTo(raiz.elemento) > 0){//se a sua direita tiver vazia eu insiro e se o elemento for maior
+              raiz.dir = new No(elemento);
+          }else if(elemento.compareTo(raiz.esq.elemento) > 0){//se nao se o elemento for maior que a sua raiz.dir (a direita da raiz j? est? ocupada) 
+              raiz.dir = new No(raiz.elemento);
+              raiz.elemento = elemento;
+          }else{//caso contrario eu insiro na direita pass
+              raiz.dir = new No(raiz.elemento);
+              raiz.elemento = raiz.esq.elemento;//elemento inserirdo na raiz passa a receber o elemento da esquerda
+              raiz.esq.elemento = elemento;//elemento da esquerda da raiz passa a receber o elemento fazendo o pai ficar azuis e os filhos brancos
           }
-          raiz.esq.cor = raiz.dir.cor = false;
- 
-       // Senao, se a arvore tiver dois elementos (raiz e esq)
-       } else if (raiz.dir == null) {
-          if (elemento.compareTo(raiz.elemento) > 0) {
-             raiz.dir = new No(elemento);
-            // System.out.println("Antes, dois elementos(D). Agora, raiz(" + raiz.elemento + "), esq (" + raiz.esq.elemento + ") e dir(" + raiz.dir.elemento + ").");
- 
-          } else if (elemento.compareTo(raiz.esq.elemento) > 0) {
-             raiz.dir = new No(raiz.elemento);
-             raiz.elemento = elemento;
-             //System.out.println("Antes, dois elementos(E). Agora, raiz(" + raiz.elemento + "), esq (" + raiz.esq.elemento + ") e dir(" + raiz.dir.elemento + ").");
- 
-          } else {
-             raiz.dir = new No(raiz.elemento);
-             raiz.elemento = raiz.esq.elemento;
-             raiz.esq.elemento = elemento;
-//             System.out.println("Antes, dois elementos(F). Agora, raiz(" + raiz.elemento + "), esq (" + raiz.esq.elemento + ") e dir(" + raiz.dir.elemento + ").");
+          raiz.dir.cor = raiz.esq.cor = false;
+      }
+
+      //Se a arvore tiver dois elemento a (raiz) e a (direita)
+      else if(raiz.esq == null){
+          if(elemento.compareTo(raiz.elemento) < 0){//se a sua esquerda tiver vazia eu insiro e se o elemento for maior
+              raiz.esq = new No(elemento);
+          }else if(elemento.compareTo(raiz.dir.elemento) < 0){//se nao se o elemento for maior que a sua raiz.esq (a esquerda da raiz j? est? ocupada) 
+              raiz.esq = new No(raiz.elemento);
+              raiz.elemento = elemento;
+          }else{//caso contrario eu insiro na direita pass
+              raiz.esq = new No(raiz.elemento);
+              raiz.elemento = raiz.dir.elemento;//elemento inserirdo na raiz passa a receber o elemento da dir
+              raiz.dir.elemento = elemento;//elemento da dir da raiz passa a receber o elemento fazendo o pai ficar azuis e os filhos brancos
           }
           raiz.esq.cor = raiz.dir.cor = false;
- 
-       // Senao, a arvore tem tres ou mais elementos
-       } else {
-  //        System.out.println("Arvore com tres ou mais elementos...");
-          inserir(elemento, null, null, null, raiz);
-       }
-       raiz.cor = false;
-    }
+      }
+
+      //Senao a arvore tem tres ou mais elementos
+      else{
+          try {
+              inserir(elemento,null,null,null,raiz);
+          } catch (Exception e) {
+              e.printStackTrace();
+          }
+      }
+      raiz.cor = false;
+  }
+
  
     private void balancear(No bisavo, No avo, No pai, No i) {
        // Se o pai tambem e preto, reequilibrar a arvore, rotacionando o avo
@@ -528,201 +523,6 @@ class Alvinegra {
     }
  }
  
-
-/*
-class Alvinegra{
-    public No raiz;
-
-
-    public Alvinegra(){
-        raiz = null;
-    }
-
-    public void inserir(Filme elemento){
-        inserir(elemento.getTitulo());
-    }
-
-    private void inserir(String elemento){
-        //Se a arvore tiver vazia insere os elementos
-        if(raiz == null){
-            raiz = new No(elemento);
-        }
-
-        //Se a arvore tiver sï¿½ um elemento vai inserir na esquerda se for menor ou na direita se for maior
-        else if(raiz.dir == null && raiz.esq == null){//verifica se os dois sao null pois vai chamar recursivamente apontando para esq ou para dir
-            if(elemento.compareTo(raiz.elemento) < 0){// se o elemento a ser inserido for menor que a raiz insere ele a esquerda
-                raiz.esq = new No(elemento);
-            }else{//caso contrario insere a sua direita
-                raiz.dir = new No(elemento);
-            }
-        }
-
-        //Se a arvore tiver dois elemento a (raiz) e a (esquerda)
-        else if(raiz.dir == null){
-            if(elemento.compareTo(raiz.elemento) > 0){//se a sua direita tiver vazia eu insiro e se o elemento for maior
-                raiz.dir = new No(elemento);
-            }else if(elemento.compareTo(raiz.esq.elemento) > 0){//se nao se o elemento for maior que a sua raiz.dir (a direita da raiz jï¿½ estï¿½ ocupada) 
-                raiz.dir = new No(raiz.elemento);
-                raiz.elemento = elemento;
-            }else{//caso contrario eu insiro na direita pass
-                raiz.dir = new No(raiz.elemento);
-                raiz.elemento = raiz.esq.elemento;//elemento inserirdo na raiz passa a receber o elemento da esquerda
-                raiz.esq.elemento = elemento;//elemento da esquerda da raiz passa a receber o elemento fazendo o pai ficar azuis e os filhos brancos
-            }
-            raiz.dir.cor = raiz.esq.cor = false;
-        }
-
-        //Se a arvore tiver dois elemento a (raiz) e a (direita)
-        else if(raiz.esq == null){
-            if(elemento.compareTo(raiz.elemento) < 0){//se a sua esquerda tiver vazia eu insiro e se o elemento for maior
-                raiz.esq = new No(elemento);
-            }else if(elemento.compareTo(raiz.dir.elemento) < 0){//se nao se o elemento for maior que a sua raiz.esq (a esquerda da raiz jï¿½ estï¿½ ocupada) 
-                raiz.esq = new No(raiz.elemento);
-                raiz.elemento = elemento;
-            }else{//caso contrario eu insiro na direita pass
-                raiz.esq = new No(raiz.elemento);
-                raiz.elemento = raiz.dir.elemento;//elemento inserirdo na raiz passa a receber o elemento da dir
-                raiz.dir.elemento = elemento;//elemento da dir da raiz passa a receber o elemento fazendo o pai ficar azuis e os filhos brancos
-            }
-            raiz.esq.cor = raiz.dir.cor = false;
-        }
-
-        //Senao a arvore tem tres ou mais elementos
-        else{
-            try {
-                inserir(elemento,null,null,null,raiz);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        raiz.cor = false;
-    }
-
-    private void inserir(String elemento,No bisavo,No avo,No pai,No i)throws Exception{
-        if(i == null){
-            if(elemento.compareTo(pai.elemento) > 0){
-                i = pai.esq = new No(elemento,true);
-            }else{
-                i = pai.dir = new No(elemento, true);
-            }
-            if(pai.cor == true){
-                balancear(bisavo, avo, pai, i);
-            }
-        }
-
-        else{
-            //Achou um 4-no na Alvinegra precisa de fragmentar
-            if(i.esq != null && i.dir != null && i.esq.cor == true && i.dir.cor == true){
-                i.cor= true;
-                i.esq.cor = i.dir.cor = false;
-                if(i == raiz){
-                    i.cor = false;
-                }else if(pai.cor == true){
-                    balancear(bisavo, avo, pai, i);
-                }
-            }
-
-            if(elemento.compareTo(i.elemento) < 0){
-                inserir(elemento, avo, pai, i, i.esq);
-            }
-
-            if(elemento.compareTo(i.elemento) > 0){
-                inserir(elemento, avo, pai, i, i.dir);
-            }
-
-            else{
-                throw new Exception("Erro na insercao");
-            }
-        }
-    }
-
-
-
-    private void balancear(No bisavo, No avo, No pai, No i) {
-        // Se o pai tambem e preto, reequilibrar a arvore, rotacionando o avo
-        if (pai.cor == true) {
-           // 4 tipos de reequilibrios e acoplamento
-           if (pai.elemento.compareTo(avo.elemento) > 0) { // rotacao a esquerda ou direita-esquerda
-              if (i.elemento.compareTo(pai.elemento) > 0) {
-                 avo = rotacaoEsq(avo);
-              } else {
-                 avo = rotacaoDirEsq(avo);
-              }
-           } else { // rotacao a direita ou esquerda-direita
-              if (i.elemento.compareTo(pai.elemento) < 0) {
-                 avo = rotacaoDir(avo);
-              } else {
-                 avo = rotacaoEsqDir(avo);
-              }
-           }
-           if (bisavo == null) {
-              raiz = avo;
-           } else if (avo.elemento.compareTo(bisavo.elemento) < 0) {
-              bisavo.esq = avo;
-           } else {
-              bisavo.dir = avo;
-           }
-           // reestabelecer as cores apos a rotacao
-           avo.cor = false;
-           avo.esq.cor = avo.dir.cor = true;
-        }
-     }
-
-     private No rotacaoDir(No no){
-        No noEsq = no.esq;
-        No noEsqDir = noEsq.dir;
-
-        noEsq.dir = no;
-        no.esq = noEsqDir;
-
-        return noEsq;
-     }
-
-     private No rotacaoEsq(No no){
-        No noDir = no.dir;
-        No noDirEsq = noDir.esq;
-
-        noDir.esq = no;
-        no.dir = noDirEsq;
-
-        return noDir;
-     }
-
-     private No rotacaoDirEsq(No no){
-        no.dir = rotacaoDir(no.dir);
-
-        return rotacaoEsq(no);
-     }
-
-     private No rotacaoEsqDir(No no){
-        no.esq = rotacaoEsq(no.esq);
-        return rotacaoDir(no);
-     }
-
-     public boolean pesquisar(String elemento){
-        System.out.println(elemento);
-        System.out.print("raiz" );
-        return pesquisar(elemento,raiz);
-     }
-
-     private boolean pesquisar(String elemento,No i){
-        boolean resp = false;
-
-        if(i == null){
-            resp = false;
-        }
-        else if(elemento.compareTo(i.elemento) < 0){
-            System.out.print("esq ");
-            resp = pesquisar(elemento,i.esq);
-        }
-        else{
-            System.out.print("dir");
-            resp = pesquisar(elemento,i.dir);
-        }
-        
-        return resp;
-     }
-}*/
 class QT4 {
     public static void main(String[] args) throws Exception{
         //Scanner sc = new Scanner(System.in);
